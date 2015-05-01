@@ -1,0 +1,189 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+
+body {
+  width: 800px;
+  margin: 0 auto;
+  background: #efefef;
+  color: #333;
+  font-family: 'Verdana', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+  font-size: 16px;
+  line-height: 22px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Helvetica Neue', 'Verdana', 'Helvetica', 'Arial', sans-serif;
+}
+
+h1 {
+  font-size: 22px;
+}
+
+h2 {
+  font-size: 20px;
+}
+
+h3 {
+  font-size: 18px;
+}
+
+h4 {
+  font-size: 16px;
+}
+
+h5 {
+  font-size: 14px;
+}
+
+h6 {
+  font-size: 12px;
+}
+
+form {
+  display: block;
+}
+
+input, textarea, button {
+  padding: 2px 3px;
+  border-radius: 2px;
+  border: 1px solid #999;
+  background: #fff;
+  outline: none;
+  font-size: 16px;
+  line-height: 22px;
+  resize: none;
+}
+
+input[type=submit], button {
+  padding: 2px 7px;
+  font-size: 14px;
+  border-bottom-width: 2px;
+  border-radius: 5px;
+}
+
+input[type=submit]:active, button:active {
+  position: relative;
+  top: 1px;
+  margin-bottom: 1px;
+  border-bottom-width: 1px;
+}
+
+input[type=submit]:hover, button:hover,
+input:focus, textarea:focus, button:focus {
+  border-color: #758BFC;
+}
+
+input[type=submit].-success, button.-success {
+  color: #fff;
+  background: #55B959;
+  border-color: #4EA951;
+}
+
+input[type=submit].-success:hover, button.-success:hover,
+input[type=submit].-success:focus, button.-success:focus  {
+  border-color: #439345;
+}
+
+.card-block h1,
+.card-block h2,
+.card-block h3,
+.card-block h4,
+.card-block h5,
+.card-block h6 {
+  margin-bottom: 22px;
+  font-weight: 400;
+  color: #666;
+}
+
+.cf:before, .cf:after {
+  content: " ";
+  display: table;
+}
+.cf:after {
+  clear: both;
+}
+.cf {
+  *zoom: 1;
+}
+
+
+form.-horizontal input[type=text],
+form.-horizontal textarea {
+  display: block;
+  width: 100%;
+  margin-bottom: 11px;
+}
+
+.card-block {
+  margin-bottom: 22px;
+  padding: 22px;
+  background: #fff;
+}
+
+.header {
+  padding: 22px;
+}
+
+.orders-list {
+  margin: 0 0 0 26px;
+  padding-bottom: 33px;
+}
+
+.orders-list li {
+  position: relative;
+  color: #ccc;
+  margin-bottom: 33px;
+}
+.orders-list li:last-child {
+  margin-bottom: 0;
+}
+
+.orders-list li .order-title {
+  display: block;
+  width: 80%;
+  color: #333;
+}
+.orders-list li .order-meta {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 12px;
+  color: #999;
+  text-align: right;
+}
+.orders-list li .order-price {
+  font-weight: 700;
+}
+.orders-list li .order-description {
+  margin-top: 7px;
+  width: 80%;
+  white-space: pre-wrap;
+  color: #999;
+}
+
+.add-order-form .order-description {
+  height: 92px;  
+}
+.add-order-form .order-price {
+  float: left;
+  width: 100px!important;
+}
+.add-order-form .order-submit {
+  float: right;
+}
+
+.pending-orders h3 {
+  color: #A73E3D;
+}
+.completed-orders h3 {
+  color: #4AA34D;
+}
+.completed-orders .order-price {
+  color: #A73E3D;
+}
+
