@@ -2,33 +2,18 @@
 require_once(__DIR__ . '/../private/lib/router.php');
 require_once(__DIR__ . '/../private/lib/db.php');
 
-$dbs_conf = array(
-  'vk_db_1' => array(
-    'host' => '127.0.0.1',    
-    'port' => '3306',
-    'user' => 'root',
-    'password' => 'rootpass',
-    'charset' => 'utf8'
-  ),
-  'vk_db_2' => array(
-    'host' => '127.0.0.1',
-    'port' => '3306',
-    'user' => 'root',
-    'password' => 'rootpass',
-    'charset' => 'utf8'
-  )
+$path = array(
+  'views' => __DIR__ . '/../private/views',
+  'config' => __DIR__ . '/../private/config.json'
 );
 
-$dirs = array(
-  'views' => __DIR__ . '/../private/views'
-);
-
-$dbs = db_create_conns($dbs_conf);
+$conns = db_create_conns(json_decode(file_get_contents($path['config']), true));
 
 // Start serving routes
-$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-$request['url'] = parse_url("$protocol://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
+$request['url'] = parse_url("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
 $request['post'] = $_POST;
-router($dbs, $request, $dirs['views']);
+$request['method'] = $_SERVER['REQUEST_METHOD'];
 
-db_close_conns($dbs);
+router($conns, $request, $path['views']);
+
+db_close_conns($conns);

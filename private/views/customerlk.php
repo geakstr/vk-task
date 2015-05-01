@@ -3,7 +3,7 @@
   <input type="text" name="title" class="order-title" value="" placeholder="Краткое описание" />
   <textarea name="description" class="order-description" placeholder="Расширенное описание" ></textarea>
   <input type="text" name="price" class="order-price" value="" placeholder="Цена руб." />
-  <input type="submit" class="order-submit -success" value="Создать" />
+  <input type="submit" class="order-submit -success" value="Опубликовать" />
 </form>
 
 <div class="pending-orders card-block cf">

@@ -2,15 +2,14 @@
 function db_create_conns($dbs_conf) {
   $dbs = array();
 
-  foreach ($dbs_conf as $db => $db_conf) {
-    $dbs[$db] = mysqli_connect($db_conf['host'], $db_conf['user'], $db_conf['password'], $db);
+  foreach ($dbs_conf as $table => $conn) {
+    $dbs[$table] = mysqli_connect($conn['host'], $conn['user'], $conn['password'], $conn['db']);
 
     if (mysqli_connect_errno()) {
-      printf("MySQL DB not connected: %s\n", mysqli_connect_error());
+      printf("DB '$conn[db]' not connected: %s\n", mysqli_connect_error());
       exit();
     }
   }
-
   return $dbs;
 }
 

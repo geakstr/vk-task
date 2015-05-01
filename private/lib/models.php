@@ -1,11 +1,11 @@
 <?php
 // Make new order from customer
-function model_add_order($dbs, $title, $description, $price, $customer) {
+function model_add_order($conns, $title, $description, $price, $customer) {
   // Disable autocommit to have transaction rollback possibility
-  mysqli_autocommit($dbs['vk_db_2'], false);
+  mysqli_autocommit($conns['orders'], false);
 
   $sql = "INSERT INTO orders(title, description, price, customer) VALUES(?, ?, ?, ?)";
-  $stmt = mysqli_stmt_init($dbs['vk_db_2']);
+  $stmt = mysqli_stmt_init($conns['orders']);
 
   if (!mysqli_stmt_prepare($stmt, $sql)) {
     return false;
@@ -14,26 +14,26 @@ function model_add_order($dbs, $title, $description, $price, $customer) {
   mysqli_stmt_bind_param($stmt, "ssdi", $title, $description, $price, $customer);    
 
   if (!mysqli_stmt_execute($stmt)) {
-    mysqli_rollback($dbs['vk_db_2']);
+    mysqli_rollback($conns['orders']);
     return false;
   }
 
-  if (!mysqli_commit($dbs['vk_db_2'])) {
+  if (!mysqli_commit($conns['orders'])) {
     return false;
   }
 
   mysqli_stmt_close($stmt);
-  mysqli_autocommit($dbs['vk_db_2'], true);
+  mysqli_autocommit($conns['orders'], true);
 
   return true;
 }
 
 // Get all orders for customer and separte them to pending and completed
-function model_get_all_customer_orders($dbs, $customer) {
+function model_get_all_customer_orders($conns, $customer) {
   $sql = "SELECT title, description, price, completed, creation_time, payment_time FROM orders ";
   $sql .= " WHERE customer = ? ORDER BY creation_time ASC";
 
-  if ($stmt = mysqli_prepare($dbs['vk_db_2'], $sql)) {
+  if ($stmt = mysqli_prepare($conns['orders'], $sql)) {
     mysqli_stmt_bind_param($stmt, "i", $customer);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_bind_result($stmt, $title, $description, $price, $completed, $creation_time, $payment_time);

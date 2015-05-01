@@ -159,6 +159,9 @@ form.-horizontal textarea {
 .orders-list li .order-price {
   font-weight: 700;
 }
+.orders-list li .order-time {
+  font-size: 10px;
+}
 .orders-list li .order-description {
   margin-top: 7px;
   width: 80%;
@@ -178,7 +181,7 @@ form.-horizontal textarea {
 }
 
 .pending-orders h3 {
-  color: #A73E3D;
+  color: #F88A22;
 }
 .completed-orders h3 {
   color: #4AA34D;
