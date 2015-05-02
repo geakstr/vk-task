@@ -1,6 +1,6 @@
 {
   "users": {
-    "db": "vk_db_2",
+    "db": "vk_db_1",
     "host": "127.0.0.1",
     "port": "3306",
     "user": "root",

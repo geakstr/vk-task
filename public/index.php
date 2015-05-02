@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 require_once(__DIR__ . '/../private/lib/router.php');
 require_once(__DIR__ . '/../private/lib/db.php');
 

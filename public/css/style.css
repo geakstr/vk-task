@@ -60,6 +60,8 @@ input, textarea, button {
 }
 
 input[type=submit], button {
+  position: relative;
+  top: -2px;
   padding: 2px 7px;
   font-size: 14px;
   border-bottom-width: 2px;
@@ -67,8 +69,7 @@ input[type=submit], button {
 }
 
 input[type=submit]:active, button:active {
-  position: relative;
-  top: 1px;
+  top: -1px;
   margin-bottom: 1px;
   border-bottom-width: 1px;
 }
@@ -111,12 +112,33 @@ input[type=submit].-success:focus, button.-success:focus  {
   *zoom: 1;
 }
 
+.form-msgs {
+  padding-left: 4px;
+  font-size: 12px;
+  list-style: none outside;
+  color: #A73E3D;
+}
+.form-msgs li:first-child {
+  margin-top: -11px;  
+}
+.form-msgs li:last-child {
+  margin-bottom: 11px;
+}
+
+.server-msgs li:first-child {
+  margin-top: 11px;
+  padding-top: 5px;
+  border-top: 1px dashed #efefef;
+}
 
 form.-horizontal input[type=text],
+form.-horizontal input[type=password],
 form.-horizontal textarea {
-  display: block;
-  width: 100%;
   margin-bottom: 11px;
+}
+
+form .-expanded {
+  width: 100%;
 }
 
 .card-block {
@@ -127,6 +149,15 @@ form.-horizontal textarea {
 
 .header {
   padding: 22px;
+}
+
+.login-form {
+  width: 300px;
+}
+
+.login-form .submit {
+  display: inline-block;
+  margin: 0 auto;
 }
 
 .orders-list {
@@ -173,11 +204,10 @@ form.-horizontal textarea {
   height: 92px;  
 }
 .add-order-form .order-price {
-  float: left;
-  width: 100px!important;
+  width: 100px;
 }
 .add-order-form .order-submit {
-  float: right;
+  float: right; 
 }
 
 .pending-orders h3 {
