@@ -66,6 +66,7 @@ input[type=submit], button {
   font-size: 14px;
   border-bottom-width: 2px;
   border-radius: 5px;
+  cursor: pointer;
 }
 
 input[type=submit]:active, button:active {
@@ -162,24 +163,23 @@ form .-expanded {
 
 .orders-list {
   margin: 0 0 0 26px;
-  padding-bottom: 33px;
 }
 
-.orders-list li {
+.orders-list li, .orders-list .perform-order-form {
   position: relative;
   color: #ccc;
   margin-bottom: 33px;
 }
-.orders-list li:last-child {
-  margin-bottom: 0;
+.orders-list li:last-child, .orders-list .perform-order-form:last-child {
+  margin-bottom: 22px;
 }
 
-.orders-list li .order-title {
+.orders-list .order-title {
   display: block;
   width: 80%;
   color: #333;
 }
-.orders-list li .order-meta {
+.orders-list .order-meta, .orders-list .perform-order {
   position: absolute;
   top: 0;
   right: 0;
@@ -187,15 +187,18 @@ form .-expanded {
   color: #999;
   text-align: right;
 }
-.orders-list li .order-price {
+.orders-list .order-price {
   font-weight: 700;
 }
-.orders-list li .order-time {
+.orders-list .order-time {
   font-size: 10px;
 }
-.orders-list li .order-description {
+.orders-list .perform-order button {
+  font-size: 12px;
+  line-height: 14px;
+}
+.orders-list .order-description {
   margin-top: 7px;
-  width: 80%;
   white-space: pre-wrap;
   color: #999;
 }
@@ -208,6 +211,10 @@ form .-expanded {
 }
 .add-order-form .order-submit {
   float: right; 
+}
+
+.perform-order-form {
+  display: list-item;
 }
 
 .pending-orders h3 {

@@ -21,14 +21,7 @@ function submit_form(form, callback) {
 
 function show_form_errors(msgs_txts_obj, msgs_nodes_obj) {
   // Remove old text from nodes
-  for (var msgs_nodes_prop in msgs_nodes_obj) {
-    if (msgs_nodes_obj.hasOwnProperty(msgs_nodes_prop)) {
-      var msg_node = msgs_nodes_obj[msgs_nodes_prop];
-      while (msg_node.firstChild) {
-        msg_node.removeChild(msg_node.firstChild);
-      }
-    }
-  }
+  remove_form_errors(msgs_txts_obj, msgs_nodes_obj);
 
   // Insert new text if exist
   for (var msgs_txts_prop in msgs_txts_obj) {
@@ -41,4 +34,37 @@ function show_form_errors(msgs_txts_obj, msgs_nodes_obj) {
       }
     }
   }
+}
+
+function remove_form_errors(msgs_txts_obj, msgs_nodes_obj) {
+  for (var msgs_nodes_prop in msgs_nodes_obj) {
+    if (msgs_nodes_obj.hasOwnProperty(msgs_nodes_prop)) {
+      var msg_node = msgs_nodes_obj[msgs_nodes_prop];
+      while (msg_node.firstChild) {
+        msg_node.removeChild(msg_node.firstChild);
+      }
+    }
+  }
+}
+
+function get_formatted_current_time() {
+  var now = new Date();
+  var date = now.getDate().toString();
+  if (date.length === 1) {
+    date = '0' + date;
+  }
+  var month = (now.getMonth() + 1).toString();
+  if (month.length === 1) {
+    month = '0' + month;
+  }
+  var year = now.getFullYear().toString();
+  var hours = now.getHours().toString();
+  if (hours.length === 1) {
+    hours = '0' + hours;
+  }
+  var mins = now.getMinutes().toString();
+  if (mins.length === 1) {
+    mins = '0' + mins;
+  }
+  return date + '.' + month + '.' + year + ' ' + hours + ':' + mins;
 }

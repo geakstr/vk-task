@@ -18,6 +18,10 @@ function security_is_authorized($conns) {
   }
 }
 
+function security_update_session($conns) {
+  $_SESSION['user'] = model_get_user_by_email($conns, $_SESSION['user']['email']);
+}
+
 function security_is_customer($conns) {
   return security_session_has_role($conns, 1);
 }
@@ -38,4 +42,8 @@ function security_unauthorize() {
   unset($_SESSION['user']);
   session_unset();
   session_destroy();
+}
+
+function security_check_referer($url) {
+  return "$url[scheme]://$url[host]:$url[port]/" === $_SERVER['HTTP_REFERER'];
 }

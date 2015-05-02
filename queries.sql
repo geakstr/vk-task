@@ -7,7 +7,7 @@ CREATE TABLE users (
   id                  INT NOT NULL AUTO_INCREMENT,
   email               VARCHAR(255) NOT NULL UNIQUE,
   fio                 VARCHAR(255) NOT NULL,
-  balance             INT NOT NULL DEFAULT 0,
+  balance             DECIMAL(14,2) NOT NULL DEFAULT 0,
   role                INT NOT NULL, -- 1 - customer; 2 - performer
   creation_time       DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id)

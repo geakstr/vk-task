@@ -3,7 +3,8 @@ require_once('view.php');
 require_once('models.php');
 require_once('security.php');
 
-function router($conns, $request, $views) {  
+function router($conns, $request, $views) {    
+  security_update_session($conns);
   $url = $request['url']['path'];
   switch ($url) {
     case ($url === '/' && $request['method'] === 'GET'):  
@@ -28,10 +29,18 @@ function router($conns, $request, $views) {
       break;
 
     case ($url === '/actions/orders/add' && $request['method'] === 'POST'):  
-      if (security_is_customer($conns)) {    
+      if (security_check_referer($request['url']) && security_is_customer($conns)) {    
         route_add_order_action($conns, $request, $views);
       } else {
         route_auth_logout_action($conns, $request, $views);
+      }
+      break;
+
+    case ($url === '/actions/orders/perform' && $request['method'] === 'POST'):    
+      if (security_check_referer($request['url']) && security_is_performer($conns)) {
+        route_perform_order_action($conns, $request, $views); 
+      } else {
+        route_auth_logout_action($conns, $request, $views); 
       }
       break;
 
@@ -121,6 +130,15 @@ function route_add_order_action($conns, $request, $views) {
     }
   }
 
+  $total_price = model_get_customer_total_orders_price($conns, $_SESSION['user']['id']);
+  $total_price += $price;
+  $diff = $_SESSION['user']['balance'] - $total_price;
+  if ($diff < 0) {
+    $def = $total_price - $_SESSION['user']['balance'];
+    $response['type'] = 'error';
+    $response['msgs']['server'][] = "На балансе не хватает $def руб., чтобы оплатить все заказы"; 
+  }
+
   if ($response['type'] === 'error') {
     echo json_encode($response);
     return;
@@ -132,6 +150,22 @@ function route_add_order_action($conns, $request, $views) {
   }
 
   echo json_encode($response);
+}
+
+// POST: /actions/orders/perform
+function route_perform_order_action($conns, $request, $views) {
+  $order_id = trim($request['post']['id']);
+
+  $response = array(
+    'type' => 'ok',
+    'msgs' => array()
+  );
+
+  if (!ctype_digit($order_id)) {
+    $response['type'] = 'error';
+  }
+
+  model_perform_order($conns, $order_id, $_SESSION['user']['id']);
 }
 
 function route_404($conns, $request, $views) {
