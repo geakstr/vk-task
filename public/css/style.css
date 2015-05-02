@@ -216,7 +216,10 @@ form .-expanded {
 .completed-orders h3 {
   color: #4AA34D;
 }
-.completed-orders .order-price {
+.customer.completed-orders .order-price {
   color: #A73E3D;
+}
+.performer.completed-orders .order-price {
+  color: #4AA34D;
 }
 

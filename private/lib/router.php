@@ -1,41 +1,38 @@
 <?php
 require_once('view.php');
 require_once('models.php');
+require_once('security.php');
 
 function router($conns, $request, $views) {  
   $url = $request['url']['path'];
   switch ($url) {
     case ($url === '/' && $request['method'] === 'GET'):  
-      // User not authorized  
-      if (!isset($_SESSION['user_id']) || $_SESSION['user_id'] == null) {
+      if (!security_is_authorized($conns)) {
+        security_unauthorize();
         route_welcome($conns, $request, $views);  
       } else {
-        $user = model_get_used_by_id($conns, $_SESSION['user_id']);
-
-        // Hmm, session information not valid 
-        if ($user === null || ($user['role'] !== 1 && $user['role'] !== 2)) {
-          route_auth_logout($conns, $request, $views);  
+        if (security_is_customer($conns)) {
+          route_customer_lk($conns, $request, $views);
         } else {
-          // Ok, we have valid session
-          if ($user['role'] === 1) {
-            route_customer_lk($conns, $request, $views);
-          } else {
-            route_performer_lk($conns, $request, $views);
-          }
-        }
+          route_performer_lk($conns, $request, $views);
+        }  
       }
       break;
 
-    case ($url === '/auth/login' && $request['method'] === 'POST'):
-      route_auth_login($conns, $request, $views);
+    case ($url === '/actions/auth/login' && $request['method'] === 'POST'):
+      route_auth_login_action($conns, $request, $views);
       break;
 
-    case ($url === '/auth/logout'):
-      route_auth_logout($conns, $request, $views);
+    case ($url === '/actions/auth/logout'):
+      route_auth_logout_action($conns, $request, $views);
       break;
 
-    case ($url === '/actions/orders/add' && $request['method'] === 'POST'):      
-      route_add_order_action($conns, $request, $views);
+    case ($url === '/actions/orders/add' && $request['method'] === 'POST'):  
+      if (security_is_customer($conns)) {    
+        route_add_order_action($conns, $request, $views);
+      } else {
+        route_auth_logout_action($conns, $request, $views);
+      }
       break;
 
     default:
@@ -55,20 +52,20 @@ function route_welcome($conns, $request, $views) {
 function route_customer_lk($conns, $request, $views) {
   view_render($views, 'customerlk.php', array(
     'title' => 'Личный кабинет',
-    'orders' => model_get_all_customer_orders($conns, 1)
+    'orders' => model_get_all_customer_orders($conns, $_SESSION['user']['id'])
   ));
 }
 
 // GET: / (if authorized as performer)
 function route_performer_lk($conns, $request, $views) {
-  view_render($views, 'customerlk.php', array(
+  view_render($views, 'performerlk.php', array(
     'title' => 'Личный кабинет',
-    'orders' => model_get_all_customer_orders($conns, 1)
+    'orders' => model_get_all_orders_for_performer($conns, $_SESSION['user']['id'])
   ));
 }
 
 // POST: /auth/login
-function route_auth_login($conns, $request, $views) {
+function route_auth_login_action($conns, $request, $views) {
   $email = trim($request['post']['email']);
 
   $response = array(
@@ -76,23 +73,23 @@ function route_auth_login($conns, $request, $views) {
     'msgs' => array()
   ); 
 
-  $user_id = model_auth_login($conns, $email);
+  $user = model_get_user_by_email($conns, $email);
 
-  if ($user_id === null) {
+  if ($user === null) {
     $response['type'] = 'error';
     $response['msgs']['email'][] = 'Такой пользователь не найден';
   } else {
-    $_SESSION['user_id'] = $user_id;
+    security_unauthorize();
+    session_start();
+    $_SESSION['user'] = $user;
   }
 
   echo json_encode($response);
 }
 
 // ALL: /auth/logout
-function route_auth_logout($conns, $request, $views) {
-  unset($_SESSION['user_id']);
-  session_unset();
-  session_destroy();
+function route_auth_logout_action($conns, $request, $views) {
+  security_unauthorize();  
   header('Location: /');
 }
 
@@ -100,8 +97,7 @@ function route_auth_logout($conns, $request, $views) {
 function route_add_order_action($conns, $request, $views) {
   $title = trim($request['post']['title']);
   $description = trim($request['post']['description']);
-  $price = trim($request['post']['price']);
-  $customer_id = 1;  
+  $price = trim($request['post']['price']); 
 
   $response = array(
     'type' => 'ok',
@@ -130,9 +126,9 @@ function route_add_order_action($conns, $request, $views) {
     return;
   }
 
-  if (!model_add_order($conns, $title, $description, $price, $customer_id)) {
+  if (!model_add_order($conns, $title, $description, $price, $_SESSION['user']['id'])) {
     $response['type'] = 'error';
-    $response['msgs']['server'][] = 'something';         
+    $response['msgs']['server'][] = 'Что-то пошло не так, попробуйте позднее';         
   }
 
   echo json_encode($response);

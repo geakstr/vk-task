@@ -1,9 +1,9 @@
 <?php
-function model_get_used_by_id($conns, $id) {
-  $sql = "SELECT id, email, fio, balance, role, creation_time FROM users WHERE id = ?";
+function model_get_user_by_email($conns, $email) {
+  $sql = "SELECT id, email, fio, balance, role, creation_time FROM users WHERE email = ?";
 
   if ($stmt = mysqli_prepare($conns['users'], $sql)) {    
-    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_bind_param($stmt, 's', $email);
 
     mysqli_stmt_execute($stmt);
 
@@ -57,7 +57,7 @@ function model_add_order($conns, $title, $description, $price, $customer) {
   return true;
 }
 
-// Get all orders for customer and separte them to pending and completed
+// Get all customer orders and separte them to pending and completed for him
 function model_get_all_customer_orders($conns, $customer) {
   $sql = 'SELECT title, description, price, completed, creation_time, payment_time FROM orders ';
   $sql .= ' WHERE customer = ? ORDER BY creation_time ASC';
@@ -89,20 +89,33 @@ function model_get_all_customer_orders($conns, $customer) {
   return false;
 }
 
-function model_auth_login($conns, $email) {
-  $sql = "SELECT id FROM users WHERE email = ?";
-  
-  if ($stmt = mysqli_prepare($conns['users'], $sql)) {    
-    mysqli_stmt_bind_param($stmt, 's', $email);
+// Get all available orders for performer and separte them to pending and completed by him
+function model_get_all_orders_for_performer($conns, $performer) {
+  $sql = 'SELECT title, description, price, completed, creation_time, payment_time FROM orders ';
+  $sql .= ' WHERE completed = 0 OR performer = ? ORDER BY creation_time ASC';
 
+  if ($stmt = mysqli_prepare($conns['orders'], $sql)) {
+    mysqli_stmt_bind_param($stmt, 'i', $performer);
     mysqli_stmt_execute($stmt);
+    mysqli_stmt_bind_result($stmt, $title, $description, $price, $completed, $creation_time, $payment_time);
 
-    mysqli_stmt_bind_result($stmt, $user_id);
+    $orders = array(
+      'pending' => array(),
+      'completed' => array()
+    );
+    while (mysqli_stmt_fetch($stmt)) {
+      $orders[$completed == 1 ? 'completed' : 'pending'][] = array(
+        'title' => $title,
+        'description' => $description,
+        'price' => $price,
+        'creation_time' => date("d.m.Y H:i", strtotime($creation_time)),
+        'payment_time' => date("d.m.Y H:i", strtotime($payment_time)),
+      );      
+    }
 
-    while (mysqli_stmt_fetch($stmt)) {};
     mysqli_stmt_close($stmt);
 
-    return $user_id;
+    return $orders;
   }
 
   return false;
