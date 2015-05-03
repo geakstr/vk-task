@@ -7,8 +7,8 @@
 }
 
 body {
-  width: 800px;
-  margin: 0 auto;
+  max-width: 800px;
+  margin: 22px auto 0 auto;
   background: #efefef;
   color: #333;
   font-family: 'Verdana', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
@@ -120,7 +120,7 @@ input[type=submit].-success:focus, button.-success:focus  {
   color: #A73E3D;
 }
 .form-msgs li:first-child {
-  margin-top: -11px;  
+  
 }
 .form-msgs li:last-child {
   margin-bottom: 11px;

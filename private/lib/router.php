@@ -44,6 +44,14 @@ function router($conns, $request, $views) {
       }
       break;
 
+    case ($url === '/actions/balance/refill' && $request['method'] === 'POST'):
+      if (security_check_referer($request['url']) && security_is_customer($conns)) {
+        route_balance_refill($conns, $request, $views);
+      } else {
+        route_auth_logout_action($conns, $request, $views); 
+      }
+      break;
+
     default:
       route_404($conns, $request, $views);
       break;
@@ -104,8 +112,8 @@ function route_auth_logout_action($conns, $request, $views) {
 
 // POST: /actions/orders/add
 function route_add_order_action($conns, $request, $views) {
-  $title = trim($request['post']['title']);
-  $description = trim($request['post']['description']);
+  $title = htmlentities(trim($request['post']['title']), ENT_QUOTES, 'UTF-8');
+  $description = htmlentities(trim($request['post']['description']), ENT_QUOTES, 'UTF-8');
   $price = trim($request['post']['price']); 
 
   $response = array(
@@ -121,7 +129,7 @@ function route_add_order_action($conns, $request, $views) {
   $price = str_replace(',', '.', $price);
   if (strlen($price) === 0 || !is_numeric($price)) {
     $response['type'] = 'error';
-    $response['msgs']['price'][] = 'Должна быть числом'; 
+    $response['msgs']['price'][] = 'Сумма должна быть числом'; 
   } else {
     $price = doubleval($price);
     if ($price < 0 || $price > 999999999999.99) {
@@ -130,13 +138,14 @@ function route_add_order_action($conns, $request, $views) {
     }
   }
 
+  // Check customer balance
   $total_price = model_get_customer_total_orders_price($conns, $_SESSION['user']['id']);
   $total_price += $price;
   $diff = $_SESSION['user']['balance'] - $total_price;
   if ($diff < 0) {
     $def = $total_price - $_SESSION['user']['balance'];
     $response['type'] = 'error';
-    $response['msgs']['server'][] = "На балансе не хватает $def руб., чтобы оплатить все заказы"; 
+    $response['msgs']['server'][] = 'На балансе не хватает $def руб., чтобы оплатить все заказы'; 
   }
 
   if ($response['type'] === 'error') {
@@ -163,9 +172,56 @@ function route_perform_order_action($conns, $request, $views) {
 
   if (!ctype_digit($order_id)) {
     $response['type'] = 'error';
+    $response['msgs']['server'][] = 'Что-то пошло не так, попробуйте позднее';         
   }
 
-  model_perform_order($conns, $order_id, $_SESSION['user']['id']);
+  if ($response['type'] === 'error') {
+    echo json_encode($response);
+    return;
+  }
+
+  if (!model_perform_order($conns, $order_id, $_SESSION['user']['id'])) {
+    $response['type'] = 'error';
+    $response['msgs']['server'][] = 'Что-то пошло не так, попробуйте позднее';         
+  }
+
+  echo json_encode($response);
+}
+
+// POST: /actions/balance/refill
+function route_balance_refill($conns, $request, $views) {
+  $fee = str_replace(',', '.', $request['post']['fee']);
+
+  $response = array(
+    'type' => 'ok',
+    'msgs' => array()
+  );  
+
+  if (strlen($fee) === 0 || !is_numeric($fee)) {
+    $response['type'] = 'error';
+    $response['msgs']['fee'][] = 'Сумма должна быть числом'; 
+  } else {
+    $fee = doubleval($fee);
+    if ($fee < 0) {
+      $response['type'] = 'error';
+      $response['msgs']['fee'][] = 'Сумма от 0 до 999999999999.99 руб'; 
+    } else if ($fee + doubleval($_SESSION['user']['balance']) > 999999999999.99) {
+      $response['type'] = 'error';
+      $response['msgs']['fee'][] = 'Баланс может быть от 0 до 999999999999.99 руб'; 
+    }  
+  }
+
+  if ($response['type'] === 'error') {
+    echo json_encode($response);
+    return;
+  }  
+  
+  if (!model_balance_refill($conns, $_SESSION['user']['id'], $fee)) {
+    $response['type'] = 'error';
+    $response['msgs']['server'][] = 'Что-то пошло не так, попробуйте позднее';         
+  }
+
+  echo json_encode($response);
 }
 
 function route_404($conns, $request, $views) {

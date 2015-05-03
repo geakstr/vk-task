@@ -1,10 +1,18 @@
-<div class="card-block">
-  Баланс: <span class="profile-balance"><?php echo $_SESSION['user']['balance']; ?></span> руб. | <a href="/actions/auth/logout">Выйти</a>
+<div class="card-block cf">
+  <div style="float: left;">
+    <b>Баланс</b>:
+    <span id="profile-balance" class="profile-balance"><?php echo $_SESSION['user']['balance']; ?></span> руб.
+  </div>
+  <div style="float: right;">
+    <?php echo $_SESSION['user']['fio']; ?>
+    |
+    <a href="/actions/auth/logout">Выйти</a>
+  </div>
 </div>
 
 <div class="performer pending-orders card-block cf">
-  <h3>Доступные для выполнения заказы (<span class="pending-orders-cnt"><?php echo count($orders['pending']); ?></span>)</h3>
-  <ol class="orders-list">
+  <h3>Лента доступных заказов (<span id="pending-orders-cnt"><?php echo count($orders['pending']); ?></span>)</h3>
+  <ol class="orders-list" id="pending-orders-list">
 <?php foreach ($orders['pending'] as $order) { ?>
     <form action="/actions/orders/perform" method="post" class="perform-order-form">
       <div class="order-title"><?php echo $order['title']; ?></div>      
@@ -23,8 +31,8 @@
 </div>
 
 <div class="performer completed-orders card-block cf">
-  <h3>Выполненные заказы (<span class="completed-orders-cnt"><?php echo count($orders['completed']); ?></span>)</h3>
-  <ol class="orders-list">
+  <h3>Выполненные (<span id="completed-orders-cnt"><?php echo count($orders['completed']); ?></span>)</h3>
+  <ol class="orders-list" id="completed-orders-list">
 <?php foreach ($orders['completed'] as $order) { ?>
     <li>
       <div class="order-title"><?php echo $order['title']; ?></div>
@@ -37,3 +45,6 @@
 <?php } ?>
   </ol>
 </div>
+
+<script src="/js/lk-common.js"></script>
+<script src="/js/lk-performer.js"></script>

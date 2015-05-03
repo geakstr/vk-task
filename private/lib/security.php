@@ -19,7 +19,9 @@ function security_is_authorized($conns) {
 }
 
 function security_update_session($conns) {
-  $_SESSION['user'] = model_get_user_by_email($conns, $_SESSION['user']['email']);
+  if (isset($_SESSION['user']) && isset($_SESSION['user']['email'])) {
+    $_SESSION['user'] = model_get_user_by_email($conns, $_SESSION['user']['email']);
+  }
 }
 
 function security_is_customer($conns) {
@@ -45,5 +47,7 @@ function security_unauthorize() {
 }
 
 function security_check_referer($url) {
-  return "$url[scheme]://$url[host]:$url[port]/" === $_SERVER['HTTP_REFERER'];
+  $port = isset($url['port']) ? ':' . $url['port'] : '';
+  $port = strlen($port) > 0 ? $port : '';
+  return "$url[scheme]://$url[host]$port/" === $_SERVER['HTTP_REFERER'];
 }
