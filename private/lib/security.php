@@ -28,7 +28,7 @@ function security_is_customer($conns) {
   return security_session_has_role($conns, 1);
 }
 
-function security_is_performer($conns) {
+function security_is_worker($conns) {
   return security_session_has_role($conns, 2);
 }
 

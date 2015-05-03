@@ -2,27 +2,28 @@ window.onload = function() {
   var dom = {
     forms: {
       login: {
-        self: document.getElementById('login-form'),
-        msgs: {
-          email: document.getElementById('login-form-email-msgs'),
-          server: document.getElementById('login-form-server-msgs')
-        }
+        selfs: document.querySelectorAll('.login-form')
       },
     }
   };
 
-  dom.forms.login.self.onsubmit = function(event) {
-    event.preventDefault();
+  for (var i = 0; i < dom.forms.login.selfs.length; i++) {
+    dom.forms.login.selfs[i].onsubmit = function(event) {
+      event.preventDefault();
 
-    var form = this;
-    submit_form(form, function() {
-      var response = JSON.parse(this.response);
-      show_form_errors(response.msgs, dom.forms.login.msgs);
+      var form = this;
+      var msgs = {
+        email: form.querySelector('.login-form-email-msgs'),
+        server: form.querySelector('.login-form-server-msgs')
+      };
 
-      if (response.type === 'ok') {
-        location.reload();
-      }
-    });
-    return false;
+      Utils.submit_form(form, function() {
+        var response = JSON.parse(this.response);
+        if (response.type === 'ok') {
+          location.reload();
+        }
+      });
+      return false;
+    };
   };
 };

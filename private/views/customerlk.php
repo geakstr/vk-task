@@ -2,7 +2,14 @@
   <div style="float: left;">
     <b>Баланс</b>:
     <span id="profile-balance" class="profile-balance"><?php echo $_SESSION['user']['balance']; ?></span> руб.
-    
+    /
+    <span id="profile-sub-balance" class="profile-balance"><?php echo $sub_balance; ?></span> руб.
+
+    <div class="muted">
+      <p>Первая сумма — фактический баланс на данный момент</p>
+      <p>Вторая — сколько останется после выплат за все ваши заказы</p>
+    </div>
+
     <form action="/actions/balance/refill" method="post" id="balance-refill-form" style="margin-top: 11px;">
       <input type="text" name="fee" id="balance-refill-form-fee" style="width: 120px;" value="" placeholder="Руб." />      
       <input type="submit" value="Пополнить" />
@@ -40,7 +47,9 @@
          id="add-order-form-price" 
          class="order-price cf"
          value=""
-         placeholder="Цена руб." />
+         placeholder="Плата руб." />
+
+  <span class="muted">Исполнитель получит <span id="add-order-form-worker-fee">— руб.</span> (комиссия 10%)</span>
 
   <input type="submit"
          class="order-submit -success cf"
@@ -59,7 +68,7 @@
       <div class="order-time"><?php echo $order['creation_time']; ?></div>    
       <div class="order-description"><?php echo $order['description']; ?></div>   
       <div class="order-meta">
-        <div class="order-price"><?php echo $order['price']; ?> руб.</div>        
+        <div class="order-price"><?php echo number_format($order['price'], '2', '.', ''); ?> руб.</div>        
       </div>   
     </li>
 <?php } ?>
@@ -67,7 +76,7 @@
 </div>
 
 <div class="customer completed-orders card-block cf">
-  <h3>Выполненные (<span id="completed-orders-cnt"><?php echo count($orders['completed']); ?></span>)</h3>
+  <h3>Законченные (<span id="completed-orders-cnt"><?php echo count($orders['completed']); ?></span>)</h3>
   <ol class="orders-list" id="completed-orders-list">
 <?php foreach ($orders['completed'] as $order) { ?>
     <li>
@@ -75,7 +84,7 @@
       <div class="order-time"><?php echo $order['payment_time']; ?></div>      
       <div class="order-description"><?php echo $order['description']; ?></div>      
       <div class="order-meta">
-        <div class="order-price">-<?php echo $order['price']; ?> руб.</div>        
+        <div class="order-price">-<?php echo number_format($order['price'], '2', '.', ''); ?> руб.</div>        
       </div>
     </li>
 <?php } ?>

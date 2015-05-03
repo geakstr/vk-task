@@ -40,7 +40,7 @@ function model_get_user_by_field($conns, $field, $type, $val) {
 }
 
 function model_get_order_by_id($conns, $id) {
-  $sql = "SELECT id, title, description, customer, performer, price, completed, payment_time, creation_time ";
+  $sql = "SELECT id, title, description, customer, worker, price, completed, payment_time, creation_time ";
   $sql .= " FROM orders WHERE id = ?";
 
   if ($stmt = mysqli_prepare($conns['orders'], $sql)) {    
@@ -50,7 +50,7 @@ function model_get_order_by_id($conns, $id) {
                                    $title,
                                    $description,
                                    $customer,
-                                   $performer,
+                                   $worker,
                                    $price,
                                    $completed,
                                    $payment_time,
@@ -63,7 +63,7 @@ function model_get_order_by_id($conns, $id) {
         'title' => $title,
         'description' => $description,
         'customer' => $customer,
-        'performer' => $performer,        
+        'worker' => $worker,        
         'price' => $price,
         'completed' => $completed,
         'creation_time' => date("d.m.Y H:i", strtotime($creation_time)),
@@ -83,6 +83,22 @@ function model_get_customer_total_orders_price($conns, $customer_id) {
 
   if ($stmt = mysqli_prepare($conns['orders'], $sql)) {    
     mysqli_stmt_bind_param($stmt, 'i', $customer_id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_bind_result($stmt, $total_price);
+
+    while (mysqli_stmt_fetch($stmt)) {};
+    mysqli_stmt_close($stmt);
+
+    return $total_price;
+  }
+
+  return 0;
+}
+
+function model_get_service_profit($conns) {
+  $sql = 'SELECT SUM(price) * 0.90 FROM orders WHERE completed = 1';
+
+  if ($stmt = mysqli_prepare($conns['orders'], $sql)) {    
     mysqli_stmt_execute($stmt);
     mysqli_stmt_bind_result($stmt, $total_price);
 
@@ -118,7 +134,7 @@ function model_add_order($conns, $title, $description, $price, $customer_id) {
   return true;
 }
 
-function model_perform_order($conns, $order_id, $performer_id) {
+function model_work_order($conns, $order_id, $worker_id) {
   $order = model_get_order_by_id($conns, $order_id);
   if ($order === null) {
     return false;
@@ -128,12 +144,12 @@ function model_perform_order($conns, $order_id, $performer_id) {
   mysqli_autocommit($conns['users'], false);  
 
   // Update order information
-  $sql = 'UPDATE orders SET completed = 1, performer = ?, payment_time = ? WHERE id = ?';
+  $sql = 'UPDATE orders SET completed = 1, worker = ?, payment_time = ? WHERE id = ?';
   $stmt_order = mysqli_stmt_init($conns['orders']);
   if (!mysqli_stmt_prepare($stmt_order, $sql)) {
     return false;
   }
-  mysqli_stmt_bind_param($stmt_order, 'isi', $performer_id, date("Y-m-d H:i:s"), $order_id);
+  mysqli_stmt_bind_param($stmt_order, 'isi', $worker_id, date("Y-m-d H:i:s"), $order_id);
   
   // Update customer balance
   $sql = 'UPDATE users SET balance = (balance - ?) WHERE id = ?';
@@ -143,13 +159,14 @@ function model_perform_order($conns, $order_id, $performer_id) {
   }
   mysqli_stmt_bind_param($stmt_cust, 'ii', $order['price'], $order['customer']);
   
-  // Update performer balance
+  // Update worker balance
   $sql = 'UPDATE users SET balance = (balance + ?) WHERE id = ?';
   $stmt_perf = mysqli_stmt_init($conns['users']);
   if (!mysqli_stmt_prepare($stmt_perf, $sql)) {
     return false;
   }
-  mysqli_stmt_bind_param($stmt_perf, 'ii', $order['price'], $performer_id);
+  $worker_price = $order['price'] * 0.90;
+  mysqli_stmt_bind_param($stmt_perf, 'di', $worker_price, $worker_id);
   
   // Try executing queries. If something wrong — rollback all
   if (!mysqli_stmt_execute($stmt_order) || !mysqli_stmt_execute($stmt_cust) || !mysqli_stmt_execute($stmt_perf)) {
@@ -179,18 +196,26 @@ function model_get_all_customer_orders($conns, $customer) {
   $sql = 'SELECT id, title, description, price, completed, creation_time, payment_time ';
   $sql .= ' FROM orders WHERE customer = ?';
 
-  return model_get_all_orders_width_sql($conns, $sql, $customer);
+  return model_get_all_orders_with_sql($conns, $sql, $customer);
 }
 
-// Get all available orders for performer and separte them to pending and completed by him
-function model_get_all_orders_for_performer($conns, $performer) {
+// Get all available orders for worker and separte them to pending and completed by him
+function model_get_all_orders_for_worker($conns, $worker) {
   $sql = 'SELECT id, title, description, price, completed, creation_time, payment_time ';
-  $sql .= ' FROM orders WHERE completed = 0 OR performer = ?';
+  $sql .= ' FROM orders WHERE completed = 0 OR worker = ?';
 
-  return model_get_all_orders_width_sql($conns, $sql, $performer);
+  $orders = model_get_all_orders_with_sql($conns, $sql, $worker);
+  foreach ($orders['completed'] as &$order) {
+    $order['price'] *= 0.90;
+  }
+  foreach ($orders['pending'] as &$order) {
+    $order['price'] *= 0.90;
+  }
+
+  return $orders;
 }
 
-function model_get_all_orders_width_sql($conns, $sql, $user_id) {
+function model_get_all_orders_with_sql($conns, $sql, $user_id) {
   if ($stmt = mysqli_prepare($conns['orders'], $sql)) {
     mysqli_stmt_bind_param($stmt, 'i', $user_id);
     mysqli_stmt_execute($stmt);

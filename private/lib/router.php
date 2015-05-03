@@ -15,7 +15,7 @@ function router($conns, $request, $views) {
         if (security_is_customer($conns)) {
           route_customer_lk($conns, $request, $views);
         } else {
-          route_performer_lk($conns, $request, $views);
+          route_worker_lk($conns, $request, $views);
         }  
       }
       break;
@@ -36,9 +36,9 @@ function router($conns, $request, $views) {
       }
       break;
 
-    case ($url === '/actions/orders/perform' && $request['method'] === 'POST'):    
-      if (security_check_referer($request['url']) && security_is_performer($conns)) {
-        route_perform_order_action($conns, $request, $views); 
+    case ($url === '/actions/orders/work' && $request['method'] === 'POST'):    
+      if (security_check_referer($request['url']) && security_is_worker($conns)) {
+        route_work_order_action($conns, $request, $views); 
       } else {
         route_auth_logout_action($conns, $request, $views); 
       }
@@ -60,24 +60,30 @@ function router($conns, $request, $views) {
 
 // GET: / (if not authorized)
 function route_welcome($conns, $request, $views) {
+  $profit = number_format(model_get_service_profit($conns), '2', '.', '');
   view_render($views, 'index.php', array(
-    'title' => 'Вход'
+    'title' => 'Вход',
+    'profit' => $profit
   ));
 }
 
 // GET: / (if authorized as customer)
 function route_customer_lk($conns, $request, $views) {
+  $total_price = model_get_customer_total_orders_price($conns, $_SESSION['user']['id']);
+  $sub_balance = $_SESSION['user']['balance'] - $total_price; 
+  $sub_balance = number_format($sub_balance, '2', '.', '');
   view_render($views, 'customerlk.php', array(
     'title' => 'Личный кабинет',
-    'orders' => model_get_all_customer_orders($conns, $_SESSION['user']['id'])
+    'orders' => model_get_all_customer_orders($conns, $_SESSION['user']['id']),
+    'sub_balance' => $sub_balance
   ));
 }
 
-// GET: / (if authorized as performer)
-function route_performer_lk($conns, $request, $views) {
-  view_render($views, 'performerlk.php', array(
+// GET: / (if authorized as worker)
+function route_worker_lk($conns, $request, $views) {
+  view_render($views, 'workerlk.php', array(
     'title' => 'Личный кабинет',
-    'orders' => model_get_all_orders_for_performer($conns, $_SESSION['user']['id'])
+    'orders' => model_get_all_orders_for_worker($conns, $_SESSION['user']['id'])
   ));
 }
 
@@ -145,7 +151,7 @@ function route_add_order_action($conns, $request, $views) {
   if ($diff < 0) {
     $def = $total_price - $_SESSION['user']['balance'];
     $response['type'] = 'error';
-    $response['msgs']['server'][] = 'На балансе не хватает $def руб., чтобы оплатить все заказы'; 
+    $response['msgs']['server'][] = "На балансе не хватает $def руб., чтобы оплатить все заказы"; 
   }
 
   if ($response['type'] === 'error') {
@@ -161,8 +167,8 @@ function route_add_order_action($conns, $request, $views) {
   echo json_encode($response);
 }
 
-// POST: /actions/orders/perform
-function route_perform_order_action($conns, $request, $views) {
+// POST: /actions/orders/work
+function route_work_order_action($conns, $request, $views) {
   $order_id = trim($request['post']['id']);
 
   $response = array(
@@ -180,7 +186,7 @@ function route_perform_order_action($conns, $request, $views) {
     return;
   }
 
-  if (!model_perform_order($conns, $order_id, $_SESSION['user']['id'])) {
+  if (!model_work_order($conns, $order_id, $_SESSION['user']['id'])) {
     $response['type'] = 'error';
     $response['msgs']['server'][] = 'Что-то пошло не так, попробуйте позднее';         
   }

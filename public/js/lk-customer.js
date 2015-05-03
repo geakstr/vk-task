@@ -23,40 +23,54 @@ window.onload = function() {
     }
   };
 
+  dom['labels']['sub_balance'] = document.getElementById('profile-sub-balance');
+  dom['labels']['worker_fee'] = document.getElementById('add-order-form-worker-fee');
+
   dom.forms.balance_refill.self.onsubmit = function(event) {
     event.preventDefault();
 
     var form = this;
-    submit_form(form, function() {
+    Utils.submit_form(form, function() {
       var response = JSON.parse(this.response);
 
-      show_form_errors(response.msgs, dom.forms.balance_refill.msgs);
+      Utils.show_form_errors(response.msgs, dom.forms.balance_refill.msgs);
       if (response['type'] === 'ok') {
         // Update balance
         var fee = parseFloat(dom.forms.balance_refill.fee.value);
         var cur_balance = parseFloat(dom.labels.balance.textContent);
         var new_balance = fee + cur_balance;
 
+        var new_sub_balance = parseFloat(dom.labels.sub_balance.textContent) + fee;
+
         dom.labels.balance.textContent = new_balance.toFixed(2);
+        dom.labels.sub_balance.textContent = new_sub_balance.toFixed(2);
 
         form.reset();
-        remove_form_errors(response.msgs, dom.forms.balance_refill.msgs);
+        Utils.remove_form_errors(response.msgs, dom.forms.balance_refill.msgs);
       }
     });
 
     return false;
   };
 
+  dom.forms.add_order.price.oninput = function(event) {
+    var fee = parseFloat(this.value) * 0.90;
+    if (isNaN(fee)) {
+      dom.labels.worker_fee.textContent = '— руб.';
+    } else {
+      dom.labels.worker_fee.textContent = fee.toFixed(2) + ' руб.';
+    }
+
+  };
+
   dom.forms.add_order.self.onsubmit = function(event) {
     event.preventDefault();
 
     var form = this;
-    submit_form(form, function() {
+    Utils.submit_form(form, function() {
       var response = JSON.parse(this.response);
 
-      console.log(response);
-
-      show_form_errors(response.msgs, dom.forms.add_order.msgs);
+      Utils.show_form_errors(response.msgs, dom.forms.add_order.msgs);
 
       if (response.type === 'ok') {
         // Manually create new order in DOM list
@@ -68,7 +82,7 @@ window.onload = function() {
 
         var time_node = document.createElement('div');
         time_node.className = 'order-time';
-        time_node.textContent = get_formatted_current_time();
+        time_node.textContent = Utils.get_formatted_current_time();
 
         var description_node = document.createElement('div');
         description_node.className = 'order-description';
@@ -93,8 +107,11 @@ window.onload = function() {
         var pending_orders_cnt = parseInt(dom.labels.pending_orders_cnt.textContent);
         dom.labels.pending_orders_cnt.textContent = pending_orders_cnt + 1;
 
+        var new_sub_balance = parseFloat(dom.labels.sub_balance.textContent) - price_val;
+        dom.labels.sub_balance.textContent = new_sub_balance.toFixed(2);
+
         form.reset();
-        remove_form_errors(response.msgs, dom.forms.add_order.msgs);
+        Utils.remove_form_errors(response.msgs, dom.forms.add_order.msgs);
       }
     });
 

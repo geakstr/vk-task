@@ -57,6 +57,7 @@ input, textarea, button {
   font-size: 16px;
   line-height: 22px;
   resize: none;
+  font-family: 'Verdana', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
 }
 
 input[type=submit], button {
@@ -113,6 +114,15 @@ input[type=submit].-success:focus, button.-success:focus  {
   *zoom: 1;
 }
 
+.muted {
+  font-size: 12px;
+  color: #666;
+}
+
+.login-form {
+  margin-bottom: 11px;
+}
+
 .form-msgs {
   padding-left: 4px;
   font-size: 12px;
@@ -165,12 +175,12 @@ form .-expanded {
   margin: 0 0 0 26px;
 }
 
-.orders-list li, .orders-list .perform-order-form {
+.orders-list li, .orders-list .work-order-form {
   position: relative;
   color: #ccc;
   margin-bottom: 33px;
 }
-.orders-list li:last-child, .orders-list .perform-order-form:last-child {
+.orders-list li:last-child, .orders-list .work-order-form:last-child {
   margin-bottom: 22px;
 }
 
@@ -179,7 +189,7 @@ form .-expanded {
   width: 80%;
   color: #333;
 }
-.orders-list .order-meta, .orders-list .perform-order {
+.orders-list .order-meta, .orders-list .work-order {
   position: absolute;
   top: 0;
   right: 0;
@@ -193,7 +203,7 @@ form .-expanded {
 .orders-list .order-time {
   font-size: 10px;
 }
-.orders-list .perform-order button {
+.orders-list .work-order button {
   font-size: 12px;
   line-height: 14px;
 }
@@ -213,7 +223,7 @@ form .-expanded {
   float: right; 
 }
 
-.perform-order-form {
+.work-order-form {
   display: list-item;
 }
 
@@ -226,7 +236,7 @@ form .-expanded {
 .customer.completed-orders .order-price {
   color: #A73E3D;
 }
-.performer.completed-orders .order-price {
+.worker.completed-orders .order-price {
   color: #4AA34D;
 }
 
