@@ -1,15 +1,15 @@
-CREATE DATABASE vk_db_1 CHARACTER SET utf8 COLLATE utf8_general_ci;
-CREATE DATABASE vk_db_2 CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE DATABASE vk_db_1 IF NOT EXISTS CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE DATABASE vk_db_2 IF NOT EXISTS CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 USE vk_db_1;
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
   id                  INT NOT NULL AUTO_INCREMENT,
   email               VARCHAR(255) NOT NULL UNIQUE,
   fio                 VARCHAR(255) NOT NULL,
   balance             DECIMAL(14,2) NOT NULL DEFAULT 0,
   role                INT NOT NULL, -- 1 - customer; 2 - worker
-  creation_time       DATETIME DEFAULT CURRENT_TIMESTAMP,
+  creation_time       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
@@ -30,7 +30,7 @@ VALUES('worker2@email', 'Максим Исполнительный', 2);
 
 USE vk_db_2;
 
-CREATE TABLE orders (
+CREATE TABLE IF NOT EXISTS orders (
   id                  INT NOT NULL AUTO_INCREMENT,
   title               TEXT NOT NULL,
   description         TEXT,
@@ -38,7 +38,7 @@ CREATE TABLE orders (
   worker           INT,
   price               DECIMAL(14,2) NOT NULL DEFAULT 0,
   completed           BOOLEAN NOT NULL DEFAULT 0,
-  payment_time        DATETIME,
-  creation_time       DATETIME DEFAULT CURRENT_TIMESTAMP,  
+  payment_time        TIMESTAMP,
+  creation_time       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  
   PRIMARY KEY (id)
 ) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
