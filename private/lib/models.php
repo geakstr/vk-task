@@ -96,7 +96,7 @@ function model_get_customer_total_orders_price($conns, $customer_id) {
 }
 
 function model_get_service_profit($conns) {
-  $sql = 'SELECT SUM(price) * 0.90 FROM orders WHERE completed = 1';
+  $sql = 'SELECT SUM(price) FROM orders WHERE completed = 1';
 
   if ($stmt = mysqli_prepare($conns['orders'], $sql)) {    
     mysqli_stmt_execute($stmt);
@@ -105,7 +105,7 @@ function model_get_service_profit($conns) {
     while (mysqli_stmt_fetch($stmt)) {};
     mysqli_stmt_close($stmt);
 
-    return $total_price;
+    return $total_price * 0.10;
   }
 
   return 0;

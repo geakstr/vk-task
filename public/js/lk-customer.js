@@ -44,6 +44,7 @@ window.onload = function() {
 
         dom.labels.balance.textContent = new_balance.toFixed(2);
         dom.labels.sub_balance.textContent = new_sub_balance.toFixed(2);
+        dom.labels.worker_fee.textContent = '— руб.';
 
         form.reset();
         Utils.remove_form_errors(response.msgs, dom.forms.balance_refill.msgs);
