@@ -35,10 +35,10 @@ CREATE TABLE IF NOT EXISTS orders (
   title               TEXT NOT NULL,
   description         TEXT,
   customer            INT NOT NULL,
-  worker           INT,
+  worker              INT,
   price               DECIMAL(14,2) NOT NULL DEFAULT 0,
   completed           BOOLEAN NOT NULL DEFAULT 0,
-  payment_time        TIMESTAMP,
+  payment_time        TIMESTAMP NULL DEFAULT 0,
   creation_time       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  
   PRIMARY KEY (id)
 ) ENGINE=InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
