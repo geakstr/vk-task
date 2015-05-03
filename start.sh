@@ -1,1 +1,2 @@
-php -S localhost:8000 -t public/ router.php
+#!/bin/bash
+php -S 0.0.0.0:8000 -t public/ router.php
