@@ -54,15 +54,17 @@ window.onload = function() {
     return false;
   };
 
-  dom.forms.add_order.price.oninput = function() {
+  dom.forms.add_order.price.oninput = price_oninput_event;
+  dom.forms.add_order.price.onpropertychange = price_oninput_event;
+
+  function price_oninput_event() {
     var fee = parseFloat(this.value) * 0.90;
     if (isNaN(fee)) {
       dom.labels.worker_fee.textContent = '— руб.';
     } else {
       dom.labels.worker_fee.textContent = fee.toFixed(2) + ' руб.';
     }
-
-  };
+  }
 
   dom.forms.add_order.self.onsubmit = function() {
     var form = this;
