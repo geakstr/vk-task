@@ -117,7 +117,7 @@ function route_auth_login_action($conns, $request, $views) {
     $_SESSION['user'] = $user;
   }
 
-  header('content-type: application/json');
+  header("content-type: application/json; charset=utf8");
   echo json_encode($response);
 }
 
@@ -167,7 +167,7 @@ function route_add_order_action($conns, $request, $views) {
   }
 
   if ($response['type'] === 'error') {
-    header('content-type: application/json');
+    header("content-type: application/json; charset=utf8");
     echo json_encode($response);
     return;
   }
@@ -180,7 +180,7 @@ function route_add_order_action($conns, $request, $views) {
     $response['params']['order_id'] = $order_id;
   }
 
-  header('content-type: application/json');
+  header("content-type: application/json; charset=utf8");
   echo json_encode($response);
 }
 
@@ -198,7 +198,7 @@ function route_delete_order_action($conns, $request, $views) {
     $response['msgs']['server'][] = 'Что-то пошло не так, попробуйте позднее';         
   }
 
-  header('content-type: application/json');
+  header("content-type: application/json; charset=utf8");
   echo json_encode($response);
 }
 
@@ -217,7 +217,7 @@ function route_work_order_action($conns, $request, $views) {
   }
 
   if ($response['type'] === 'error') {
-    header('content-type: application/json');
+    header("content-type: application/json; charset=utf8");
     echo json_encode($response);
     return;
   }
@@ -227,7 +227,7 @@ function route_work_order_action($conns, $request, $views) {
     $response['msgs']['server'][] = 'Что-то пошло не так, попробуйте позднее';         
   }
 
-  header('content-type: application/json');
+  header("content-type: application/json; charset=utf8");
   echo json_encode($response);
 }
 
@@ -255,7 +255,7 @@ function route_balance_refill($conns, $request, $views) {
   }
 
   if ($response['type'] === 'error') {
-    header('content-type: application/json');
+    header("content-type: application/json; charset=utf8");
     echo json_encode($response);
     return;
   }  
@@ -265,7 +265,7 @@ function route_balance_refill($conns, $request, $views) {
     $response['msgs']['server'][] = 'Что-то пошло не так, попробуйте позднее';         
   }
 
-  header('content-type: application/json');
+  header("content-type: application/json; charset=utf8");
   echo json_encode($response);
 }
 
