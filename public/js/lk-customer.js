@@ -122,7 +122,7 @@ window.onload = function() {
         li_node.appendChild(description_node);
         li_node.appendChild(meta_node);
 
-        dom.blocks.pending_orders_list.appendChild(li_node);
+        dom.blocks.pending_orders_list.insertBefore(li_node, dom.blocks.pending_orders_list.firstChild);
 
         // Update pending orders counter
         var pending_orders_cnt = parseInt(dom.labels.pending_orders_cnt.textContent);
