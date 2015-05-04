@@ -7,7 +7,7 @@ function router($conns, $request, $views) {
   security_update_session($conns);
 
   $url = $request['url']['path'];
-  
+
   switch ($url) {
     case ($url === '/' && $request['method'] === 'GET'):  
       if (!security_is_authorized($conns)) {
@@ -117,6 +117,7 @@ function route_auth_login_action($conns, $request, $views) {
     $_SESSION['user'] = $user;
   }
 
+  header('content-type: application/json');
   echo json_encode($response);
 }
 
@@ -166,6 +167,7 @@ function route_add_order_action($conns, $request, $views) {
   }
 
   if ($response['type'] === 'error') {
+    header('content-type: application/json');
     echo json_encode($response);
     return;
   }
@@ -178,6 +180,7 @@ function route_add_order_action($conns, $request, $views) {
     $response['params']['order_id'] = $order_id;
   }
 
+  header('content-type: application/json');
   echo json_encode($response);
 }
 
@@ -195,6 +198,7 @@ function route_delete_order_action($conns, $request, $views) {
     $response['msgs']['server'][] = 'Что-то пошло не так, попробуйте позднее';         
   }
 
+  header('content-type: application/json');
   echo json_encode($response);
 }
 
@@ -213,6 +217,7 @@ function route_work_order_action($conns, $request, $views) {
   }
 
   if ($response['type'] === 'error') {
+    header('content-type: application/json');
     echo json_encode($response);
     return;
   }
@@ -222,6 +227,7 @@ function route_work_order_action($conns, $request, $views) {
     $response['msgs']['server'][] = 'Что-то пошло не так, попробуйте позднее';         
   }
 
+  header('content-type: application/json');
   echo json_encode($response);
 }
 
@@ -249,6 +255,7 @@ function route_balance_refill($conns, $request, $views) {
   }
 
   if ($response['type'] === 'error') {
+    header('content-type: application/json');
     echo json_encode($response);
     return;
   }  
@@ -258,6 +265,7 @@ function route_balance_refill($conns, $request, $views) {
     $response['msgs']['server'][] = 'Что-то пошло не так, попробуйте позднее';         
   }
 
+  header('content-type: application/json');
   echo json_encode($response);
 }
 
