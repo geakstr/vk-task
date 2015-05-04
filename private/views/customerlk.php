@@ -64,6 +64,13 @@
   <ol class="orders-list" id="pending-orders-list">
 <?php foreach ($orders['pending'] as $order) { ?>
     <li>
+      <form
+            action="/actions/orders/delete"
+            method="post"
+            class="order-delete">
+        <input type="hidden" name="id" value="<?php echo $order['id']; ?>" />
+        <input type="submit" value="×" />
+      </form>
       <div class="order-title"><?php echo $order['title']; ?></div>      
       <div class="order-time"><?php echo $order['creation_time']; ?></div>    
       <div class="order-description"><?php echo $order['description']; ?></div>   

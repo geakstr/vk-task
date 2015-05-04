@@ -212,6 +212,28 @@ form .-expanded {
   white-space: pre-wrap;
   color: #999;
 }
+.orders-list .order-delete {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.orders-list li:hover .order-delete {
+  display: block;
+}
+.orders-list .order-delete input {
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  padding: 0;  
+  border-radius: 100px;
+  background: red;
+  color: white;
+  text-align: center;
+  cursor: pointer;
+  z-index: 9999;
+  border: none;  
+}
 
 .add-order-form .order-description {
   height: 92px;  

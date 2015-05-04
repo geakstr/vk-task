@@ -78,6 +78,7 @@ function model_get_order_by_id($conns, $id) {
   return null;
 }
 
+// Get sum of customer orders
 function model_get_customer_total_orders_price($conns, $customer_id) {
   $sql = 'SELECT SUM(price) FROM orders WHERE completed = 0 AND customer = ?';
 
@@ -95,6 +96,7 @@ function model_get_customer_total_orders_price($conns, $customer_id) {
   return 0;
 }
 
+// Return service profit on taxes
 function model_get_service_profit($conns) {
   $sql = 'SELECT SUM(price) FROM orders WHERE completed = 1';
 
@@ -125,6 +127,33 @@ function model_add_order($conns, $title, $description, $price, $customer_id) {
     mysqli_rollback($conns['orders']);
     return false; 
   }
+
+  $order_id = mysqli_insert_id($conns['orders']);
+
+  if (!mysqli_commit($conns['orders'])) {
+    return false;
+  }  
+
+  mysqli_stmt_close($stmt);
+  mysqli_autocommit($conns['orders'], true);
+
+  return $order_id;
+}
+
+// Delete order
+function model_delete_order($conns, $order_id) {
+  mysqli_autocommit($conns['orders'], false);  
+
+  $sql = 'DELETE FROM orders WHERE id = ?';
+  $stmt = mysqli_stmt_init($conns['orders']);
+  if (!mysqli_stmt_prepare($stmt, $sql)) {
+    return false;
+  }
+  mysqli_stmt_bind_param($stmt, 'i', $order_id);
+  if (!mysqli_stmt_execute($stmt)) {
+    mysqli_rollback($conns['orders']);
+    return false;
+  }
   if (!mysqli_commit($conns['orders'])) {
     return false;
   }
@@ -134,6 +163,7 @@ function model_add_order($conns, $title, $description, $price, $customer_id) {
   return true;
 }
 
+// Complete order by worker
 function model_work_order($conns, $order_id, $worker_id) {
   $order = model_get_order_by_id($conns, $order_id);
   if ($order === null) {
@@ -215,6 +245,7 @@ function model_get_all_orders_for_worker($conns, $worker) {
   return $orders;
 }
 
+// Get all orders wrapper
 function model_get_all_orders_with_sql($conns, $sql, $user_id) {
   if ($stmt = mysqli_prepare($conns['orders'], $sql)) {
     mysqli_stmt_bind_param($stmt, 'i', $user_id);
@@ -265,7 +296,10 @@ function model_get_all_orders_with_sql($conns, $sql, $user_id) {
   return false;
 }
 
+// Refill customer balance
 function model_balance_refill($conns, $customer, $fee) {
+  mysqli_autocommit($conns['users'], false);  
+
   $sql = 'UPDATE users SET balance = (balance + ?) WHERE id = ?';
   $stmt = mysqli_stmt_init($conns['users']);
   if (!mysqli_stmt_prepare($stmt, $sql)) {

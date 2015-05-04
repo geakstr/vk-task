@@ -20,6 +20,9 @@ window.onload = function() {
         price: document.getElementById('add-order-form-price-msgs'),
         server: document.getElementById('add-order-form-server-msgs'),
       }
+    },
+    delete_order: {
+      selfs: document.querySelectorAll('.order-delete')
     }
   };
 
@@ -44,7 +47,6 @@ window.onload = function() {
 
         dom.labels.balance.textContent = new_balance.toFixed(2);
         dom.labels.sub_balance.textContent = new_sub_balance.toFixed(2);
-        dom.labels.worker_fee.textContent = '— руб.';
 
         form.reset();
         Utils.remove_form_errors(response.msgs, dom.forms.balance_refill.msgs);
@@ -77,6 +79,22 @@ window.onload = function() {
         // Manually create new order in DOM list
         var li_node = document.createElement('li');
 
+        // Create delete button form
+        var delete_node_form = document.createElement('form');
+        delete_node_form.className = 'order-delete';
+        delete_node_form.action = '/actions/orders/delete';
+        delete_node_form.method = 'post';
+        delete_node_form.onsubmit = delete_order_event;
+        var delete_node_id = document.createElement('input');
+        delete_node_id.type = 'hidden';
+        delete_node_id.name = 'id';
+        delete_node_id.value = response.params.order_id;
+        var delete_node_submit = document.createElement('input');
+        delete_node_submit.type = 'submit';
+        delete_node_submit.value = '×';
+        delete_node_form.appendChild(delete_node_id);
+        delete_node_form.appendChild(delete_node_submit);
+
         var title_node = document.createElement('div');
         title_node.className = 'order-title';
         title_node.textContent = dom.forms.add_order.title.value.trim();
@@ -89,19 +107,21 @@ window.onload = function() {
         description_node.className = 'order-description';
         description_node.textContent = dom.forms.add_order.description.value.trim();
 
-        var meta_node = document.createElement('div');
-        meta_node.className = 'order-meta';
-
         var price_val = parseFloat(dom.forms.add_order.price.value.trim());
         var price_node = document.createElement('div');
         price_node.className = 'order-price';
         price_node.textContent = price_val.toFixed(2) + ' руб.';
 
+        var meta_node = document.createElement('div');
+        meta_node.className = 'order-meta';
         meta_node.appendChild(price_node);
+
+        li_node.appendChild(delete_node_form);
         li_node.appendChild(title_node);
         li_node.appendChild(time_node);
         li_node.appendChild(description_node);
         li_node.appendChild(meta_node);
+
         dom.blocks.pending_orders_list.appendChild(li_node);
 
         // Update pending orders counter
@@ -111,6 +131,8 @@ window.onload = function() {
         var new_sub_balance = parseFloat(dom.labels.sub_balance.textContent) - price_val;
         dom.labels.sub_balance.textContent = new_sub_balance.toFixed(2);
 
+        dom.labels.worker_fee.textContent = '— руб.';
+
         form.reset();
         Utils.remove_form_errors(response.msgs, dom.forms.add_order.msgs);
       }
@@ -118,4 +140,31 @@ window.onload = function() {
 
     return false;
   }
-}
+
+  for (var i = 0; i < dom.forms.delete_order.selfs.length; i++) {
+    dom.forms.delete_order.selfs[i].onsubmit = delete_order_event;
+  }
+
+  function delete_order_event(event) {
+    event.preventDefault();
+
+    var form = this;
+    Utils.submit_form(form, function() {
+      var response = JSON.parse(this.response);
+
+      if (response.type === 'ok') {
+        var parent_li = form.parentNode;
+        parent_li.parentNode.removeChild(parent_li);
+
+        var pending_orders_cnt = parseInt(dom.labels.pending_orders_cnt.textContent);
+        dom.labels.pending_orders_cnt.textContent = pending_orders_cnt - 1;
+
+        var price = parseFloat(parent_li.querySelector('.order-price').textContent.trim());
+        var new_sub_balance = parseFloat(dom.labels.sub_balance.textContent) + price;
+        dom.labels.sub_balance.textContent = new_sub_balance.toFixed(2);
+      }
+    });
+
+    return false;
+  }
+};

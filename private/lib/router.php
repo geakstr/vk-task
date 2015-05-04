@@ -5,7 +5,9 @@ require_once('security.php');
 
 function router($conns, $request, $views) {    
   security_update_session($conns);
+
   $url = $request['url']['path'];
+  
   switch ($url) {
     case ($url === '/' && $request['method'] === 'GET'):  
       if (!security_is_authorized($conns)) {
@@ -41,6 +43,14 @@ function router($conns, $request, $views) {
         route_work_order_action($conns, $request, $views); 
       } else {
         route_auth_logout_action($conns, $request, $views); 
+      }
+      break;
+
+    case ($url === '/actions/orders/delete' && $request['method'] === 'POST'):
+      if (security_check_referer($request['url']) && security_is_customer($conns)) {    
+        route_delete_order_action($conns, $request, $views);
+      } else {
+        route_auth_logout_action($conns, $request, $views);
       }
       break;
 
@@ -124,7 +134,8 @@ function route_add_order_action($conns, $request, $views) {
 
   $response = array(
     'type' => 'ok',
-    'msgs' => array()
+    'msgs' => array(),
+    'params' => array()
   );      
 
   if (strlen($title) === 0) {
@@ -159,7 +170,27 @@ function route_add_order_action($conns, $request, $views) {
     return;
   }
 
-  if (!model_add_order($conns, $title, $description, $price, $_SESSION['user']['id'])) {
+  $order_id = model_add_order($conns, $title, $description, $price, $_SESSION['user']['id']);
+  if ($order_id === false) {
+    $response['type'] = 'error';
+    $response['msgs']['server'][] = 'Что-то пошло не так, попробуйте позднее';         
+  } else {
+    $response['params']['order_id'] = $order_id;
+  }
+
+  echo json_encode($response);
+}
+
+// POST: /actions/order/delete
+function route_delete_order_action($conns, $request, $views) {
+  $id = trim($request['post']['id']);
+
+  $response = array(
+    'type' => 'ok',
+    'msgs' => array()
+  );     
+
+  if (!model_delete_order($conns, $id)) {
     $response['type'] = 'error';
     $response['msgs']['server'][] = 'Что-то пошло не так, попробуйте позднее';         
   }
