@@ -29,12 +29,10 @@ window.onload = function() {
   dom['labels']['sub_balance'] = document.getElementById('profile-sub-balance');
   dom['labels']['worker_fee'] = document.getElementById('add-order-form-worker-fee');
 
-  dom.forms.balance_refill.self.onsubmit = function(event) {
-    event.preventDefault();
-
+  dom.forms.balance_refill.self.onsubmit = function() {
     var form = this;
-    Utils.submit_form(form, function() {
-      var response = JSON.parse(this.response);
+    Utils.submit_form(form, function(responseText) {
+      var response = JSON.parse(responseText);
 
       Utils.show_form_errors(response.msgs, dom.forms.balance_refill.msgs);
       if (response['type'] === 'ok') {
@@ -56,22 +54,22 @@ window.onload = function() {
     return false;
   };
 
-  dom.forms.add_order.price.oninput = function(event) {
+  dom.forms.add_order.price.oninput = price_oninput_event;
+  dom.forms.add_order.price.onpropertychange = price_oninput_event;
+
+  function price_oninput_event() {
     var fee = parseFloat(this.value) * 0.90;
     if (isNaN(fee)) {
       dom.labels.worker_fee.textContent = '— руб.';
     } else {
       dom.labels.worker_fee.textContent = fee.toFixed(2) + ' руб.';
     }
+  }
 
-  };
-
-  dom.forms.add_order.self.onsubmit = function(event) {
-    event.preventDefault();
-
+  dom.forms.add_order.self.onsubmit = function() {
     var form = this;
-    Utils.submit_form(form, function() {
-      var response = JSON.parse(this.response);
+    Utils.submit_form(form, function(responseText) {
+      var response = JSON.parse(responseText);
 
       Utils.show_form_errors(response.msgs, dom.forms.add_order.msgs);
 
@@ -122,7 +120,7 @@ window.onload = function() {
         li_node.appendChild(description_node);
         li_node.appendChild(meta_node);
 
-        dom.blocks.pending_orders_list.appendChild(li_node);
+        dom.blocks.pending_orders_list.insertBefore(li_node, dom.blocks.pending_orders_list.firstChild);
 
         // Update pending orders counter
         var pending_orders_cnt = parseInt(dom.labels.pending_orders_cnt.textContent);
@@ -145,12 +143,10 @@ window.onload = function() {
     dom.forms.delete_order.selfs[i].onsubmit = delete_order_event;
   }
 
-  function delete_order_event(event) {
-    event.preventDefault();
-
+  function delete_order_event() {
     var form = this;
-    Utils.submit_form(form, function() {
-      var response = JSON.parse(this.response);
+    Utils.submit_form(form, function(responseText) {
+      var response = JSON.parse(responseText);
 
       if (response.type === 'ok') {
         var parent_li = form.parentNode;

@@ -1,22 +1,7 @@
-if (!Function.prototype.bind) {
-  Function.prototype.bind = function(oThis) {
-    if (typeof this !== 'function') {
-      throw new TypeError('Function.prototype.bind - what is trying to be bound is not callable');
-    }
-
-    var aArgs = Array.prototype.slice.call(arguments, 1),
-      fToBind = this,
-      fNOP = function() {},
-      fBound = function() {
-        return fToBind.apply(this instanceof fNOP && oThis ? this : oThis,
-          aArgs.concat(Array.prototype.slice.call(arguments)));
-      };
-
-    fNOP.prototype = this.prototype;
-    fBound.prototype = new fNOP();
-
-    return fBound;
-  };
+if (typeof String.prototype.trim !== 'function') {
+  String.prototype.trim = function() {
+    return this.replace(/^\s+|\s+$/g, '');
+  }
 }
 
 if (!document.querySelectorAll) {
@@ -48,6 +33,20 @@ if (!document.querySelector) {
   };
 }
 
+if (Object.defineProperty && Object.getOwnPropertyDescriptor && Object.getOwnPropertyDescriptor(Element.prototype, "textContent") && !Object.getOwnPropertyDescriptor(Element.prototype, "textContent").get) {
+  (function() {
+    var innerText = Object.getOwnPropertyDescriptor(Element.prototype, "innerText");
+    Object.defineProperty(Element.prototype, "textContent", {
+      get: function() {
+        return innerText.get.call(this);
+      },
+      set: function(s) {
+        return innerText.set.call(this, s);
+      }
+    });
+  })();
+}
+
 var Utils = {
   submit_form: function submit_form(form, callback) {
     var elems = form.elements;
@@ -63,7 +62,15 @@ var Utils = {
       params += elems[i].name + '=' + encodeURIComponent(value) + '&';
     }
 
-    xmlhttp.onload = callback.bind(xmlhttp);
+    xmlhttp.onload = function() {
+      callback(xmlhttp.responseText);
+    }
+    xmlhttp.onreadystatechange = function() {
+      if (this.readyState == 4) {
+        callback(xmlhttp.responseText);
+      }
+    }
+
 
     xmlhttp.open('POST', form.action, true);
     xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -80,7 +87,7 @@ var Utils = {
         var msgs_txts = msgs_txts_obj[msgs_txts_prop];
         for (var i = 0; i < msgs_txts.length; i++) {
           var li = document.createElement('li');
-          li.appendChild(document.createTextNode(msgs_txts[i]));
+          li.textContent = msgs_txts[i];
           msgs_nodes_obj[msgs_txts_prop].appendChild(li);
         }
       }
