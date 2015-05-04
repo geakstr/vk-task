@@ -12,7 +12,7 @@ window.onload = function() {
       event.preventDefault();
       var form = this;
       Utils.submit_form(form, function() {
-        var response = JSON.parse(this.response);
+        var response = JSON.parse(this.responseText);
         if (response['type'] === 'ok') {
           var li = document.createElement('li');
 

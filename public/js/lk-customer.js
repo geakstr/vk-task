@@ -34,7 +34,7 @@ window.onload = function() {
 
     var form = this;
     Utils.submit_form(form, function() {
-      var response = JSON.parse(this.response);
+      var response = JSON.parse(this.responseText);
 
       Utils.show_form_errors(response.msgs, dom.forms.balance_refill.msgs);
       if (response['type'] === 'ok') {
@@ -71,7 +71,7 @@ window.onload = function() {
 
     var form = this;
     Utils.submit_form(form, function() {
-      var response = JSON.parse(this.response);
+      var response = JSON.parse(this.responseText);
 
       Utils.show_form_errors(response.msgs, dom.forms.add_order.msgs);
 
@@ -150,7 +150,7 @@ window.onload = function() {
 
     var form = this;
     Utils.submit_form(form, function() {
-      var response = JSON.parse(this.response);
+      var response = JSON.parse(this.responseText);
 
       if (response.type === 'ok') {
         var parent_li = form.parentNode;

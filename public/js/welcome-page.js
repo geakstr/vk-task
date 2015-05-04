@@ -18,7 +18,6 @@ window.onload = function() {
       };
 
       Utils.submit_form(form, function() {
-        console.log(this.responseText);
         var response = JSON.parse(this.responseText);
         if (response.type === 'ok') {
           //location.reload();
