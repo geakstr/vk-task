@@ -8,9 +8,7 @@ window.onload = function() {
   };
 
   for (var i = 0; i < dom.forms.login.selfs.length; i++) {
-    dom.forms.login.selfs[i].onsubmit = function(event) {
-      event.preventDefault();
-
+    dom.forms.login.selfs[i].onsubmit = function() {
       var form = this;
       var msgs = {
         email: form.querySelector('.login-form-email-msgs'),

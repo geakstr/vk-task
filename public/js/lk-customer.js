@@ -29,9 +29,7 @@ window.onload = function() {
   dom['labels']['sub_balance'] = document.getElementById('profile-sub-balance');
   dom['labels']['worker_fee'] = document.getElementById('add-order-form-worker-fee');
 
-  dom.forms.balance_refill.self.onsubmit = function(event) {
-    event.preventDefault();
-
+  dom.forms.balance_refill.self.onsubmit = function() {
     var form = this;
     Utils.submit_form(form, function() {
       var response = JSON.parse(this.responseText);
@@ -56,7 +54,7 @@ window.onload = function() {
     return false;
   };
 
-  dom.forms.add_order.price.oninput = function(event) {
+  dom.forms.add_order.price.oninput = function() {
     var fee = parseFloat(this.value) * 0.90;
     if (isNaN(fee)) {
       dom.labels.worker_fee.textContent = '— руб.';
@@ -66,9 +64,7 @@ window.onload = function() {
 
   };
 
-  dom.forms.add_order.self.onsubmit = function(event) {
-    event.preventDefault();
-
+  dom.forms.add_order.self.onsubmit = function() {
     var form = this;
     Utils.submit_form(form, function() {
       var response = JSON.parse(this.responseText);
@@ -145,9 +141,7 @@ window.onload = function() {
     dom.forms.delete_order.selfs[i].onsubmit = delete_order_event;
   }
 
-  function delete_order_event(event) {
-    event.preventDefault();
-
+  function delete_order_event() {
     var form = this;
     Utils.submit_form(form, function() {
       var response = JSON.parse(this.responseText);
