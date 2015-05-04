@@ -94,7 +94,7 @@ var Utils = {
         var msgs_txts = msgs_txts_obj[msgs_txts_prop];
         for (var i = 0; i < msgs_txts.length; i++) {
           var li = document.createElement('li');
-          li.appendChild(document.createTextNode(msgs_txts[i]));
+          li.textContent = msgs_txts[i];
           msgs_nodes_obj[msgs_txts_prop].appendChild(li);
         }
       }
