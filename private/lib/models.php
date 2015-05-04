@@ -224,7 +224,7 @@ function model_work_order($conns, $order_id, $worker_id) {
 // Get all customer orders and separte them to pending and completed for him
 function model_get_all_customer_orders($conns, $customer) {
   $sql = 'SELECT id, title, description, price, completed, creation_time, payment_time ';
-  $sql .= ' FROM orders WHERE customer = ?';
+  $sql .= ' FROM orders WHERE customer = ? LIMIT 100';
 
   return model_get_all_orders_with_sql($conns, $sql, $customer);
 }
@@ -232,7 +232,7 @@ function model_get_all_customer_orders($conns, $customer) {
 // Get all available orders for worker and separte them to pending and completed by him
 function model_get_all_orders_for_worker($conns, $worker) {
   $sql = 'SELECT id, title, description, price, completed, creation_time, payment_time ';
-  $sql .= ' FROM orders WHERE completed = 0 OR worker = ?';
+  $sql .= ' FROM orders WHERE completed = 0 OR worker = ? LIMIT 100';
 
   $orders = model_get_all_orders_with_sql($conns, $sql, $worker);
   foreach ($orders['completed'] as &$order) {
@@ -276,7 +276,7 @@ function model_get_all_orders_with_sql($conns, $sql, $user_id) {
     function pending_orders_cmp($a, $b) {
       $t1 = strtotime($a['creation_time']);
       $t2 = strtotime($b['creation_time']);
-      return $t1 - $t2;
+      return $t2 - $t1;
     }
 
     function completed_orders_cmp($a, $b) {

@@ -18,7 +18,7 @@ window.onload = function() {
       msgs: {
         title: document.getElementById('add-order-form-title-msgs'),
         price: document.getElementById('add-order-form-price-msgs'),
-        server: document.getElementById('add-order-form-server-msgs'),
+        server: document.getElementById('add-order-form-server-msgs')
       }
     },
     delete_order: {

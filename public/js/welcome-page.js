@@ -3,7 +3,7 @@ window.onload = function() {
     forms: {
       login: {
         selfs: document.querySelectorAll('.login-form')
-      },
+      }
     }
   };
 
