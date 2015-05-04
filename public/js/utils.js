@@ -62,15 +62,11 @@ var Utils = {
       params += elems[i].name + '=' + encodeURIComponent(value) + '&';
     }
 
-    xmlhttp.onload = function() {
-      callback(xmlhttp.responseText);
-    }
     xmlhttp.onreadystatechange = function() {
       if (this.readyState == 4) {
         callback(xmlhttp.responseText);
       }
     }
-
 
     xmlhttp.open('POST', form.action, true);
     xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
