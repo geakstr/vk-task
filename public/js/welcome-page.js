@@ -15,8 +15,8 @@ window.onload = function() {
         server: form.querySelector('.login-form-server-msgs')
       };
 
-      Utils.submit_form(form, function() {
-        var response = JSON.parse(this.responseText);
+      Utils.submit_form(form, function(responseText) {
+        var response = JSON.parse(responseText);
         if (response.type === 'ok') {
           window.location.reload();
         }

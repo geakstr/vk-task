@@ -10,8 +10,8 @@ window.onload = function() {
   for (var i = 0; i < dom.forms.work_order.selfs.length; i++) {
     dom.forms.work_order.selfs[i].onsubmit = function() {
       var form = this;
-      Utils.submit_form(form, function() {
-        var response = JSON.parse(this.responseText);
+      Utils.submit_form(form, function(responseText) {
+        var response = JSON.parse(responseText);
         if (response['type'] === 'ok') {
           var li = document.createElement('li');
 

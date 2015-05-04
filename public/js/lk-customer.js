@@ -31,8 +31,8 @@ window.onload = function() {
 
   dom.forms.balance_refill.self.onsubmit = function() {
     var form = this;
-    Utils.submit_form(form, function() {
-      var response = JSON.parse(this.responseText);
+    Utils.submit_form(form, function(responseText) {
+      var response = JSON.parse(responseText);
 
       Utils.show_form_errors(response.msgs, dom.forms.balance_refill.msgs);
       if (response['type'] === 'ok') {
@@ -68,8 +68,8 @@ window.onload = function() {
 
   dom.forms.add_order.self.onsubmit = function() {
     var form = this;
-    Utils.submit_form(form, function() {
-      var response = JSON.parse(this.responseText);
+    Utils.submit_form(form, function(responseText) {
+      var response = JSON.parse(responseText);
 
       Utils.show_form_errors(response.msgs, dom.forms.add_order.msgs);
 
@@ -145,8 +145,8 @@ window.onload = function() {
 
   function delete_order_event() {
     var form = this;
-    Utils.submit_form(form, function() {
-      var response = JSON.parse(this.responseText);
+    Utils.submit_form(form, function(responseText) {
+      var response = JSON.parse(responseText);
 
       if (response.type === 'ok') {
         var parent_li = form.parentNode;
